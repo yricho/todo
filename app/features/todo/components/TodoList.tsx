@@ -1,6 +1,7 @@
+import { DUMMY_TODOS } from "@/app/utils/constant";
 import { normalizeData } from "@/app/utils/normalizedData";
-import { Check, LoaderCircle, Plus, SortAsc } from "lucide-react";
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { Check, LoaderCircle, Plus } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetch } from "../hooks/usefetch";
 import { setStatus } from "../slice/initDataSlice";
@@ -8,14 +9,13 @@ import { addInitData } from "../slice/todoSlice";
 import { ApiTodo, Todo } from "../types";
 import TodoCard from "./TodoCard";
 
-const DUMMY_TODOS = "https://dummyjson.com/todos";
-
 const TodoList = ({
   setCurrentView,
 }: {
   setCurrentView: Dispatch<SetStateAction<string>>;
 }) => {
   const todos = useSelector((state: { todos: Todo[] }) => state.todos ?? []);
+
   const initData = useSelector(
     (state: { initData: boolean }) => state.initData ?? false
   );
@@ -42,7 +42,9 @@ const TodoList = ({
     if (isSorted) {
       setDisplayData(sortedTodos);
     } else {
-      setDisplayData(todos);
+      const s = [...todos].sort((a, b) => a.createdAt - b.createdAt);
+
+      setDisplayData(s);
     }
   }, [isSorted, todos]);
 
@@ -88,17 +90,23 @@ const TodoList = ({
             <>
               <button
                 aria-label="Sort todos"
-                className="relative flex items-center p-3 bg-white rounded-full shadow-md hover:bg-slate-100 transition duration-200 mb-6"
+                className={`relative flex items-center p-3 space-x-2 text-slate-300 ${
+                  isSorted ? "bg-green-500 text-white" : "bg-white"
+                } rounded-full shadow-md hover:bg-slate-100 transition duration-200 mb-6`}
                 onClick={() => setIsSorted(!isSorted)}
               >
-                <Check />
-                Completed
+                <Check
+                  className={`w-5 h-5 rounded-full ${
+                    isSorted ? "text-green-500 bg-green-50" : "text-slate-300 bg-green-200"
+                  }`}
+                />
+                <span>Completed</span>
               </button>
               {displayData.map((todo) => (
                 <TodoCard
                   key={todo.id}
                   {...todo}
-                  onSave={() => setCurrentView("add")}
+                  onSave={() => setCurrentView("list")}
                 />
               ))}
             </>
