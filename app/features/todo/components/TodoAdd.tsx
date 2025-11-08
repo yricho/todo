@@ -1,23 +1,19 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { generateRandomId } from "../../../utils/random";
 import { addTodo } from "../slice/todoSlice";
 import { Todo } from "../types";
 import Header from "./Header";
+import { DATE_NOW } from "@/app/utils/constant";
+import { generateRandomId } from "@/app/utils/generateRandomId";
 
-const dateNow = Date.now();
-
-const TodoAdd = ({
-  setCurrentView,
-  isEdit = false,
-}: {
+type TodoAddProps = {
   setCurrentView: (view: string) => void;
   isEdit?: boolean;
-}) => {
+};
+
+const TodoAdd = ({ setCurrentView, isEdit = false }: TodoAddProps) => {
   const dispatch = useDispatch();
-
-
 
   const [todoItem, setTodoItem] = useState<Todo>({
     id: generateRandomId(),
@@ -25,7 +21,7 @@ const TodoAdd = ({
     description: "",
     isCompleted: false,
     isSelected: false,
-    createdAt: dateNow,
+    createdAt: DATE_NOW,
   });
 
   const { name, description } = todoItem;

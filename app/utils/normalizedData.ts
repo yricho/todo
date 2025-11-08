@@ -1,6 +1,6 @@
 import { ApiTodo, Todo } from "../features/todo/types";
 
-export const normalizeData = (apiTodos: ApiTodo[]): Todo[] => {
+export const normalizedData = (apiTodos: ApiTodo[]): Todo[] => {
   if (!apiTodos || apiTodos.length === 0) {
     return [];
   }

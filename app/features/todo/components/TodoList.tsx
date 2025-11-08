@@ -1,5 +1,5 @@
 import { DUMMY_TODOS } from "@/app/utils/constant";
-import { normalizeData } from "@/app/utils/normalizedData";
+import { normalizedData as normalizeApiData } from "@/app/utils/normalizedData";
 import { Check, LoaderCircle, Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,12 +8,13 @@ import { setStatus } from "../slice/initDataSlice";
 import { addInitData } from "../slice/todoSlice";
 import { ApiTodo, Todo } from "../types";
 import TodoCard from "./TodoCard";
+import { Button } from "./Button";
 
-const TodoList = ({
-  setCurrentView,
-}: {
+type TodoListProps = {
   setCurrentView: Dispatch<SetStateAction<string>>;
-}) => {
+};
+
+const TodoList = ({ setCurrentView }: TodoListProps) => {
   const todos = useSelector((state: { todos: Todo[] }) => state.todos ?? []);
 
   const initData = useSelector(
@@ -51,7 +52,7 @@ const TodoList = ({
   useEffect(() => {
     if (!initData) {
       if (!apiLoading && apiData && apiData.length > 0) {
-        const normalizedData = normalizeData(apiData as ApiTodo[]);
+        const normalizedData = normalizeApiData(apiData as ApiTodo[]);
         dispatch(addInitData(normalizedData));
         dispatch(setStatus(true));
       }
@@ -81,27 +82,27 @@ const TodoList = ({
       ) : (
         <div className="space-y-3">
           {displayData.length === 0 && (
-            <div className="text-center py-10 text-slate-500 bg-slate-50 rounded-lg">
-              <p>Add a New Todo</p>
-            </div>
+            <p className="text-center py-10 text-slate-500 bg-slate-50 rounded-lg">
+              Add a New Todo
+            </p>
           )}
 
           {displayData.length > 0 && (
             <>
-              <button
-                aria-label="Sort todos"
-                className={`relative flex items-center p-3 space-x-2 text-slate-300 ${
-                  isSorted ? "bg-green-500 text-white" : "bg-white"
-                } rounded-full shadow-md hover:bg-slate-100 transition duration-200 mb-6`}
+              <Button
+                label="Completed"
+                icon={
+                  <Check
+                    className={`w-5 h-5 rounded-full ${
+                      isSorted
+                        ? "text-green-500 bg-green-50"
+                        : "text-slate-300 bg-green-200"
+                    }`}
+                  />
+                }
+                customStyle={isSorted ? "bg-green-500 text-white" : "bg-white"}
                 onClick={() => setIsSorted(!isSorted)}
-              >
-                <Check
-                  className={`w-5 h-5 rounded-full ${
-                    isSorted ? "text-green-500 bg-green-50" : "text-slate-300 bg-green-200"
-                  }`}
-                />
-                <span>Completed</span>
-              </button>
+              />
               {displayData.map((todo) => (
                 <TodoCard
                   key={todo.id}
